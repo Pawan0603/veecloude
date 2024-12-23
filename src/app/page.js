@@ -1,101 +1,225 @@
+'use client';
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+
+import Loader1 from "@/components/loader/Loader1";
+
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button";
+
+
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [roomCode, setRoomCode] = useState(null);
+  const [userName, setUserName] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const router = useRouter();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const [loading, setLoading] = useState(false);
+
+  const EnterUserName = () => {
+    let btn = document.getElementById("userNameformButton");
+    btn.click();
+  }
+
+  const handleChange = (e) => {
+    if (e.target.name === "username") {
+      setUserName(e.target.value);
+      // for temp. userId set in future i change the logic of userId
+      setUserId(`${e.target.value + Date.now().toString()}`);
+    }
+  }
+
+  // checking username available are not in the localstorage & set username
+  useEffect(() => {
+    if (typeof window != 'undefined') {
+      let UN = localStorage.getItem("userName");
+      if (UN) {
+        setUserName(UN)
+      } else {
+        EnterUserName();
+      }
+    }
+  }, []);
+
+  const saveUserName = (e) => {
+    e.preventDefault();
+    if (typeof window != "undefined") {
+      localStorage.setItem("userName", userName);
+    }
+  }
+
+  const startMeeting = async () => {
+    console.log("startmeeting")
+    if (userName === null) {
+      EnterUserName();
+      return
+    }
+    setLoading(true);
+    try {
+      // Create the payload for JWT
+      const payload = {
+        userName: userName,
+        userId: userId
+      };
+
+      // Create JWT token
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_HOST}/api/enterRoom`, {
+        data: payload
+      });
+
+      console.log(response.data.data)
+      // redirecting user to room page with payload
+      if (response.data.success === true) {
+        router.push(`/room?roomId=${response.data.data}&userId=${userId}&userName=${userName}`);
+      } else {
+        console.log("Error...🔴🔴🔴🔴🔴")
+      }
+    } catch (error) {
+      console.error("Error starting meeting:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const handleJoinMeeting = (e) => {
+    e.preventDefault();
+    if (userName === null) {
+      EnterUserName();
+      return
+    }
+
+    router.push(`/room?roomId=${roomCode}&userId=${userId}&userName=${userName}`)
+  }
+
+
+
+  return (
+    <>
+      {loading === true && <Loader1 />}
+      <div className="flex flex-col md:flex-row w-screen min-h-[calc(100vh-60px)] items-center justify-center">
+        <div className="md:w-[50%] flex flex-col items-center justify-center gap-3 p-7">
+          <h1 className="text-3xl md:text-4xl">Video Call and Meeting for Everyone</h1>
+          <p className="text-gray-600 text-lg md:text-center">Connect, collaborate, and communicate seamlessly<br />with our secure video calling platform.</p>
+          <div className="flex gap-3 mt-5">
+
+
+            <button
+              onClick={startMeeting}
+              id="NewMeetingBtn"
+              className="relative flex items-center px-4 py-2 sm:px-6 sm:py-3 overflow-hidden font-medium transition-all bg-indigo-500 rounded-md group"
+            >
+              <span
+                className="absolute top-0 right-0 inline-block w-3 h-3 sm:w-4 sm:h-4 transition-all duration-500 ease-in-out bg-indigo-700 rounded group-hover:-mr-4 group-hover:-mt-4"
+              >
+                <span
+                  className="absolute top-0 right-0 w-4 h-4 sm:w-5 sm:h-5 rotate-45 translate-x-1/2 -translate-y-1/2 bg-white"
+                ></span>
+              </span>
+              <span
+                className="absolute bottom-0 rotate-180 left-0 inline-block w-3 h-3 sm:w-4 sm:h-4 transition-all duration-500 ease-in-out bg-indigo-700 rounded group-hover:-ml-4 group-hover:-mb-4"
+              >
+                <span
+                  className="absolute top-0 right-0 w-4 h-4 sm:w-5 sm:h-5 rotate-45 translate-x-1/2 -translate-y-1/2 bg-white"
+                ></span>
+              </span>
+              <span
+                className="absolute bottom-0 left-0 w-full h-full transition-all duration-500 ease-in-out delay-200 -translate-x-full bg-indigo-600 rounded-md group-hover:translate-x-0"
+              ></span>
+              <span
+                className="relative w-full text-left text-white text-sm sm:text-base transition-colors duration-200 ease-in-out group-hover:text-white"
+              >New Meeting</span
+              >
+            </button>
+
+
+            <form onSubmit={handleJoinMeeting} className="flex gap-4 items-center">
+              <div>
+                <input
+                  onChange={(e) => { setRoomCode(e.target.value) }}
+                  type="text"
+                  placeholder="Enter room code here"
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+              <button type="submit" className="hover:text-blue-600">Join</button>
+            </form>
+          </div>
+
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        <div className="md:w-[50%] flex items-center justify-center">
+          <Image src={'/videocallbg.png'} className="w-[90%]" width={500} height={500} alt="wideo call image photo" />
+        </div>
+
+      </div>
+
+      <Dialog>
+        <DialogTrigger asChild>
+          <button
+            id="userNameformButton"
+            className="hidden"
+          >
+            EnterUserName
+          </button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>VeeCloude</DialogTitle>
+            <DialogDescription>
+              Enter your username Befor you join or create a new meeting.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={saveUserName}>
+            <div className="grid gap-4 py-4">
+              {/* <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="name" className="text-right">
+                    Name
+                  </Label>
+                  <Input
+                    onChange={handleChange}
+                    id="name"
+                    name="name"
+                    defaultValue="Pedro Duarte"
+                    className="col-span-3"
+                  />
+                </div> */}
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="username" className="text-right">
+                  Username
+                </Label>
+                <Input
+                  onChange={handleChange}
+                  id="username"
+                  name="username"
+                  placeholder="your name"
+                  className="col-span-3"
+                  required
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button type="submit" className='bg-blue-500 hover:bg-blue-700'>Save</Button>
+              </DialogClose>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
