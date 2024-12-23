@@ -19,6 +19,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { Copy } from "lucide-react";
 
 
 
@@ -29,6 +31,8 @@ export default function Home() {
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
+
+  const { toast } = useToast();
 
   const EnterUserName = () => {
     let btn = document.getElementById("userNameformButton");
@@ -84,7 +88,11 @@ export default function Home() {
       console.log(response.data.data)
       // redirecting user to room page with payload
       if (response.data.success === true) {
-        router.push(`/room?roomId=${response.data.data}&userId=${userId}&userName=${userName}`);
+        setRoomCode(response.data.data);
+        if (typeof window != 'undefined') {
+          let BTN = document.getElementById("copyCodeBtn");
+          BTN.click();
+        }
       } else {
         console.log("Error...🔴🔴🔴🔴🔴")
       }
@@ -93,6 +101,20 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
+  }
+
+  const EnterRoom = () => {
+    setLoading(true);
+    if (roomCode != null) {
+      router.push(`/room?roomId=${roomCode}&userId=${userId}&userName=${userName}`);
+    }
+  }
+
+  const CopyCode = (text) => {
+    navigator.clipboard.writeText(text)
+    toast({
+      description: "Room Code has copied to clipboard",
+    })
   }
 
   const handleJoinMeeting = (e) => {
@@ -218,6 +240,45 @@ export default function Home() {
               </DialogClose>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* this is copy room code card. */}
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="outline" className="hidden" id="copyCodeBtn">Share</Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>VeeCloude</DialogTitle>
+            <DialogDescription>
+              Copy code and share your friend
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center space-x-2">
+            <div className="grid flex-1 gap-2">
+              <Label htmlFor="link" className="sr-only">
+                Link
+              </Label>
+              <Input
+                id="link"
+                // defaultValue="https://ui.shadcn.com/docs/installation"
+                value={roomCode}
+                readOnly
+              />
+            </div>
+            <Button onClick={() => { CopyCode(roomCode) }} size="sm" className="px-3">
+              <span className="sr-only">Copy</span>
+              <Copy />
+            </Button>
+          </div>
+          <DialogFooter className="sm:justify-start">
+            <DialogClose asChild>
+              <Button onClick={EnterRoom} type="button" variant="secondary">
+                Enter Room
+              </Button>
+            </DialogClose>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
