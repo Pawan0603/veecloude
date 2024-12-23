@@ -89,10 +89,8 @@ export default function Home() {
       // redirecting user to room page with payload
       if (response.data.success === true) {
         setRoomCode(response.data.data);
-        if (typeof window != 'undefined') {
-          let BTN = document.getElementById("copyCodeBtn");
-          BTN.click();
-        }
+        let BTN = document.getElementById("copyCodeBtn");
+        BTN.click();
       } else {
         console.log("Error...🔴🔴🔴🔴🔴")
       }
