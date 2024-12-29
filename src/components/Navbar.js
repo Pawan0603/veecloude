@@ -39,9 +39,6 @@ const Navbar = () => {
             <a href="/" className="text-gray-600 hover:text-gray-900 transition duration-300">
               Home
             </a>
-            <a href="/room" className="text-gray-600 hover:text-gray-900 transition duration-300">
-              Join Room
-            </a>
             <a href="/about" className="text-gray-600 hover:text-gray-900 transition duration-300">
               About
             </a>
@@ -56,9 +53,6 @@ const Navbar = () => {
           <div className="px-2 pt-2 pb-3 space-y-1">
             <a href="/" className="block px-3 py-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition duration-300">
               Home
-            </a>
-            <a href="/room" className="block px-3 py-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition duration-300">
-              Join Room
             </a>
             <a href="/about" className="block px-3 py-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition duration-300">
               About
