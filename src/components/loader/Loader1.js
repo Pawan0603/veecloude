@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 const Loader1 = () => {
     return (
-        <div className='h-screen w-screen flex items-center justify-center bg-[#4c484840] absolute top-0'>
+        <div className='h-screen w-screen flex items-center justify-center bg-[#4c484840] absolute top-0 z-50'>
             <StyledWrapper>
                 <div className="dot-spinner">
                     <div className="dot-spinner__dot" />

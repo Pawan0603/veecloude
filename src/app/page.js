@@ -131,6 +131,8 @@ export default function Home() {
 
 
   return (
+    <>
+    {loading === true && <Loader1 />}
     <AuroraBackground>
       <motion.div
         initial={{ opacity: 0.0, y: 40 }}
@@ -140,10 +142,10 @@ export default function Home() {
           duration: 0.8,
           ease: "easeInOut",
         }}
-        className="relative flex flex-col gap-4 items-center justify-center px-4"
+        className="relative flex flex-col gap-4 items-center justify-center"
       >
         <>
-          {loading === true && <Loader1 />}
+          
           <div className="flex flex-col md:flex-row w-screen min-h-[calc(100vh-60px)] items-center md:justify-center ">
             <div className="md:w-[50%] flex flex-col items-center justify-center gap-3 p-7">
               <h1 className="text-3xl md:text-4xl">Video Call and Meeting for Everyone</h1>
@@ -274,7 +276,6 @@ export default function Home() {
                   </Label>
                   <Input
                     id="link"
-                    // defaultValue="https://ui.shadcn.com/docs/installation"
                     value={roomCode}
                     readOnly
                   />
@@ -296,5 +297,6 @@ export default function Home() {
         </>
       </motion.div>
     </AuroraBackground>
+    </>
   );
 }
