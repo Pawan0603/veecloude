@@ -5,13 +5,13 @@ import React from 'react'
 function Footer() {
     return (
 
-        <footer className="w-screen px-5 py-8 flex justify-between border-t">
+        <footer className="w-screen px-5 py-8 flex justify-between border-t bg-[#f9f9fa]">
             <p>© VeeCloud.vercel.app</p>
             <div className='flex gap-5'>
-                <Link href={'#'}><Facebook className='text-blue-500'/></Link>
-                <Link href={'#'}><Instagram className='text-pink-500'/></Link>
-                <Link href={'#'}><Github className='text-green-500'/></Link>
-                <Link href={'#'}><Linkedin className='text-blue-600'/></Link>
+                <Link href={'#'}><Facebook size={20} className='text-gray-400 hover:text-blue-400'/></Link>
+                <Link href={'#'}><Instagram size={20} className='text-gray-400 hover:text-blue-400'/></Link>
+                <Link href={'#'}><Github size={20} className='text-gray-400 hover:text-blue-400'/></Link>
+                <Link href={'#'}><Linkedin size={20} className='text-gray-400 hover:text-blue-400'/></Link>
             </div>
         </footer>
     )

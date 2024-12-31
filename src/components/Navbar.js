@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react'
 
@@ -7,10 +8,11 @@ const Navbar = () => {
 
   return (
     <div>
-      <nav className="bg-white p-4 shadow-md sticky top-0">
+      <nav className="bg-white px-4 py-2 shadow-md z-40 sticky top-0">
         <div className="container mx-auto flex justify-between items-center">
           <Link href={'/'}>
-          <div className="text-gray-800 font-bold text-xl">
+          <div className="bg-gradient-to-r from-red-400 to-yellow-500 bg-clip-text text-transparent font-bold text-xl flex items-center">
+            <Image src="/veecloud.png" alt="VeeCloud" width={50} height={50} />
             VeeCloud
           </div>
           </Link>
